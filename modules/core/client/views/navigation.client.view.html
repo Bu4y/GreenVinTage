@@ -11,12 +11,14 @@
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="true">
                             <span class="clear"> <span class="block m-t-xs"> <strong class="font-bold">{{authentication.user.displayName}}</strong></span>
                             <span class="text-muted text-xs block">{{authentication.user.roles[0]}}</span>
-                        </span></a>
+                            </span>
+                        </a>
                     </div>
                 </div>
                 <div class="dropdown logo-element" ng-show="authentication.user">
                     <div ng-show="authentication.user">
-                        <img class="img-circle user-image" data-toggle="dropdown" ng-src="{{authentication.user.profileImageURL}}" href="#" alt="image" aria-expanded="true">
+                        <img class="img-circle user-image" data-toggle="dropdown" ng-src="{{authentication.user.profileImageURL}}" href="#" alt="image"
+                            aria-expanded="true">
                     </div>
                 </div>
             </li>
@@ -25,6 +27,21 @@
             </li>
             <li class="dropdown" ng-class="{active: $uiRoute}" ng-if="!authentication.user" ui-route="/">
                 <a href="/"><i class="fa fa-lock"></i> <span class="nav-label">ลงชื่อเข้าใช้</span></a>
+            </li>
+            <li class="dropdown" ng-class="{active: $uiRoute}" ng-if="authentication.user" ui-route="/categories">
+                <a href="/categories"><i class="fa fa-home"></i> <span class="nav-label">ประเภทสินค้า</span></a>
+            </li>
+            <li class="dropdown" ng-class="{active: $uiRoute}" ng-if="authentication.user" ui-route="/products">
+                <a href="/products"><i class="fa fa-home"></i> <span class="nav-label">สินค้า</span></a>
+            </li>
+            <li class="dropdown" ng-class="{active: $uiRoute}" ng-if="authentication.user" ui-route="/orders">
+                <a href="/orders"><i class="fa fa-home"></i> <span class="nav-label">รายการสั่งซื้อ</span></a>
+            </li>
+            <li class="dropdown" ng-class="{active: $uiRoute}" ng-if="authentication.user" ui-route="/shops">
+                <a href="/shops"><i class="fa fa-home"></i> <span class="nav-label">ร้านค้า</span></a>
+            </li>
+            <li class="dropdown" ng-class="{active: $uiRoute}" ng-if="authentication.user" ui-route="/promotions">
+                <a href="/promotions"><i class="fa fa-home"></i> <span class="nav-label">โปรโมชั่น</span></a>
             </li>
             <li class="dropdown" ng-class="{active: $uiRoute}" ng-if="authentication.user" ui-route="/settings/signout">
                 <a href="/api/auth/signout" target="_self"><i class="fa fa-sign-out"></i> <span class="nav-label">ออกจากระบบ</span></a>
