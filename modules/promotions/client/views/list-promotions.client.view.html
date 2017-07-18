@@ -1,0 +1,22 @@
+<section>
+  <div class="page-header">
+    <h1>Promotions</h1>
+  </div>
+  <div class="list-group">
+    <a ng-repeat="promotion in vm.promotions"
+       ui-sref="promotions.view({ promotionId: promotion._id })"
+       class="list-group-item">
+      <small class="list-group-item-text">
+        Posted on
+        <span ng-bind="promotion.created | date:'mediumDate'"></span>
+        by
+        <span ng-if="promotion.user" ng-bind="promotion.user.displayName"></span>
+        <span ng-if="!promotion.user">Deleted User</span>
+      </small>
+      <h4 class="list-group-item-heading" ng-bind="promotion.name"></h4>
+    </a>
+  </div>
+  <div class="alert alert-warning text-center" ng-if="vm.promotions.$resolved && !vm.promotions.length">
+    No Promotions yet, why don't you <a ui-sref="promotions.create">create one</a>?
+  </div>
+</section>
