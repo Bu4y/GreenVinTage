@@ -16,6 +16,12 @@ var CategorySchema = new Schema({
     required: 'Please fill Category name',
     trim: true
   },
+  subcate: [{
+    type: {
+      subid: String,
+      name: String
+    }
+  }],
   created: {
     type: Date,
     default: Date.now

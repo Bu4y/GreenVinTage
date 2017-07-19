@@ -16,6 +16,13 @@ var ProductSchema = new Schema({
     required: 'Please fill Product name',
     trim: true
   },
+  category: [{
+    type: {
+      cateid: String,
+      cate: String,
+      sub: String
+    }
+  }],
   created: {
     type: Date,
     default: Date.now

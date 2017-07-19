@@ -16,6 +16,16 @@ var OrderSchema = new Schema({
     required: 'Please fill Order name',
     trim: true
   },
+  items: {
+    type: [{
+      product: {
+        type: Schema.ObjectId,
+        ref: 'Product'
+      },
+      status: String
+    }]
+  },
+  status: String,
   created: {
     type: Date,
     default: Date.now
