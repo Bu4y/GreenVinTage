@@ -17,10 +17,8 @@ var CategorySchema = new Schema({
     trim: true
   },
   subcate: [{
-    type: {
-      subid: String,
-      name: String
-    }
+    subid: String,
+    name: String
   }],
   created: {
     type: Date,

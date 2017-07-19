@@ -17,11 +17,9 @@ var ProductSchema = new Schema({
     trim: true
   },
   category: [{
-    type: {
-      cateid: String,
+      subid: String,
       cate: String,
       sub: String
-    }
   }],
   created: {
     type: Date,
