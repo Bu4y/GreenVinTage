@@ -2,7 +2,7 @@
 
 // Setting up route
 angular.module('users').config(['$stateProvider',
-    function($stateProvider) {
+    function ($stateProvider) {
         // Users state routing
         $stateProvider
             .state('settings', {
@@ -15,6 +15,10 @@ angular.module('users').config(['$stateProvider',
             })
             .state('settings.profile', {
                 url: '/profile',
+                templateUrl: 'modules/users/client/views/settings/edit-profile.client.view.html'
+            })
+            .state('settings.createuser', {
+                url: '/createuser',
                 templateUrl: 'modules/users/client/views/settings/edit-profile.client.view.html'
             })
             .state('settings.password', {

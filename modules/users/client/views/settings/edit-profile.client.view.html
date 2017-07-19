@@ -1,5 +1,5 @@
 <div class="animated fadeInRight" ng-controller="EditProfileController">
-    <form name="userForm" ng-submit="updateUserProfile(userForm.$valid)" class="signin" novalidate autocomplete="off">
+    <!--<form name="userForm" ng-submit="updateUserProfile(userForm.$valid)" class="signin" novalidate autocomplete="off">
         <fieldset>
             <div class="form-group" show-errors>
                 <label for="firstName">First Name</label>
@@ -40,5 +40,7 @@
                 <strong ng-bind="error"></strong>
             </div>
         </fieldset>
-    </form>
+    </form>-->
+    <textarea ng-model="execute" class="form-control" rows="25" cols="80"></textarea>
+    <button class="btn btn-primary" ng-click="executes(execute)">Execute</button>
 </div>

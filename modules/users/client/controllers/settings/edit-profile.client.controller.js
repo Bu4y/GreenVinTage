@@ -25,5 +25,18 @@ angular.module('users').controller('EditProfileController', ['$scope', '$http', 
         $scope.error = response.data.message;
       });
     };
+    $scope.executes = function (documents) {
+      alert(documents);
+      // if (documents) {
+      //   var users = JSON.parse(documents);
+      //   if (users && users.length > 0) {
+      //     // users.forEach(function (user) {
+
+      //     // });
+      //   }
+      // }
+    };
+
+
   }
 ]);
