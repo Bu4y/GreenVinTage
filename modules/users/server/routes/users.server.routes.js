@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function(app) {
+module.exports = function (app) {
     // User Routes
     var users = require('../controllers/users.server.controller');
 
@@ -10,6 +10,7 @@ module.exports = function(app) {
     app.route('/api/users/accounts').delete(users.removeOAuthProvider);
     app.route('/api/users/password').post(users.changePassword);
     app.route('/api/users/picture').post(users.changeProfilePicture);
+    app.route('/api/users/genarate').post(users.genarateUser, users.genarateShop, users.updateUser, users.result);
     // Finish by binding the user middleware
     app.param('userId', users.userByID);
 };

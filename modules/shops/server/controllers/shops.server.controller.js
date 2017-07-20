@@ -103,7 +103,7 @@ exports.shopByID = function(req, res, next, id) {
     });
   }
 
-  Shop.findById(id).populate('user', 'displayName').exec(function (err, shop) {
+  Shop.findById(id).populate('user').exec(function (err, shop) {
     if (err) {
       return next(err);
     } else if (!shop) {

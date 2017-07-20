@@ -25,16 +25,36 @@ angular.module('users').controller('EditProfileController', ['$scope', '$http', 
         $scope.error = response.data.message;
       });
     };
+
+
+    // [{
+    //   "firstName": "test",
+    //   "lastName": "test",
+    //   "displayName": "test test",
+    //   "email": "test2@test2.com",
+    //   "tel": "tel2",
+    //   "username": "mrtest",
+    //   "provider": "local",
+    //   "shop": {
+    //     "name": "ร้านค้าทดสอบ"
+    //   }
+    // }]
+
+
     $scope.executes = function (documents) {
       alert(documents);
-      // if (documents) {
-      //   var users = JSON.parse(documents);
-      //   if (users && users.length > 0) {
-      //     // users.forEach(function (user) {
-
-      //     // });
-      //   }
-      // }
+      if (documents && documents !== undefined) {
+        var users = JSON.parse(documents);
+        if (users && users.length > 0) {
+          users.forEach(function (user) {
+            $http.post('/api/users/genarate', user).then(function (res) {
+              console.log(res);
+            }, function (err) {
+              alert(users.firstName + 'genarate Failed : ' + err.data.message);
+            });
+          });
+        }
+      }
     };
 
 

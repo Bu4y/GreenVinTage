@@ -8,6 +8,7 @@ var path = require('path'),
   errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller')),
   mongoose = require('mongoose'),
   User = mongoose.model('User'),
+  Shop = mongoose.model('Shop'),
   nodemailer = require('nodemailer'),
   async = require('async'),
   crypto = require('crypto');
@@ -259,4 +260,86 @@ exports.changePassword = function (req, res, next) {
       message: 'User is not signed in'
     });
   }
+};
+exports.genarateUser = function (req, res, next) {
+  var data = req.body;
+  if (data && data !== undefined) {
+
+    req.usergen = {
+      firstName: data.firstName,
+      lastName: data.lastName,
+      displayName: data.firstName + ' ' + data.lastName,
+      email: data.email,
+      tel: data.tel,
+      username: data.username,
+      password: 'P@ssw0rd1234',
+      provider: 'local'
+    };
+    req.shop = {
+      name: data.shop.name
+    };
+    var user = new User(req.usergen);
+    user.save(function (err) {
+      if (err) {
+        return res.status(400).send({
+          message: errorHandler.getErrorMessage(err)
+        });
+      } else {
+        // Remove sensitive data before login
+        req.usergen = user;
+        next();
+      }
+    });
+  } else {
+    next();
+  }
+};
+exports.genarateShop = function (req, res, next) {
+  if (req.usergen && req.usergen !== undefined) {
+    var genShop = new Shop(req.shop);
+    genShop.user = req.usergen;
+    genShop.save(function (err) {
+      if (err) {
+        return res.status(400).send({
+          message: errorHandler.getErrorMessage(err)
+        });
+      } else {
+        // Remove sensitive data before login
+        req.shop = genShop;
+        next();
+      }
+    });
+  } else {
+    next();
+  }
+};
+exports.updateUser = function (req, res, next) {
+  if (req.usergen && req.usergen !== undefined) {
+    User.findById(req.usergen._id, function (err, user) {
+      if (user && user._id) {
+
+        user.shop = req.shop;
+        user.save(function (err) {
+          if (err) {
+            return res.status(400).send({
+              message: errorHandler.getErrorMessage(err)
+            });
+          } else {
+            // Remove sensitive data before login
+            req.usergen = user;
+            next();
+          }
+        });
+      } else {
+        next();
+      }
+    });
+
+  } else {
+    next();
+  }
+};
+
+exports.result = function (req, res) {
+  res.jsonp(req.usergen);
 };
