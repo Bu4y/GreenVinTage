@@ -298,17 +298,31 @@ exports.genarateShop = function (req, res, next) {
   if (req.usergen && req.usergen !== undefined) {
     var genShop = new Shop(req.shop);
     genShop.user = req.usergen;
-    genShop.save(function (err) {
+    Shop.find({ name: genShop.name }).sort('-created').populate('user', 'displayName').exec(function (err, shops) {
       if (err) {
         return res.status(400).send({
           message: errorHandler.getErrorMessage(err)
         });
       } else {
-        // Remove sensitive data before login
-        req.shop = genShop;
-        next();
+        if (shops.length > 0) {
+          req.shop = shops[0];
+          next();
+        } else {
+          genShop.save(function (err) {
+            if (err) {
+              return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+              });
+            } else {
+              // Remove sensitive data before login
+              req.shop = genShop;
+              next();
+            }
+          });
+        }
       }
     });
+
   } else {
     next();
   }

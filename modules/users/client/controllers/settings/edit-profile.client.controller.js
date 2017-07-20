@@ -42,15 +42,38 @@ angular.module('users').controller('EditProfileController', ['$scope', '$http', 
 
 
     $scope.executes = function (documents) {
-      alert(documents);
       if (documents && documents !== undefined) {
+        var i = 0;
+        var Orlength = 0;
+        var pushError = [];
         var users = JSON.parse(documents);
         if (users && users.length > 0) {
+          Orlength = users.length;
           users.forEach(function (user) {
             $http.post('/api/users/genarate', user).then(function (res) {
               console.log(res);
+              i++;
+              if (i === Orlength) {
+                var successLength = Orlength - pushError.length;
+                alert('บันทึกข้อมูลเรียบร้อยแล้ว : ' + successLength + ' รายการ ผิดพลาด : ' + pushError.length + ' รายการ');
+                i = 0;
+                $scope.execute = null;
+                return;
+              }
             }, function (err) {
-              alert(users.firstName + 'genarate Failed : ' + err.data.message);
+              pushError.push({
+                user: user,
+                error: err.data.message
+              });
+              i++;
+              if (i === Orlength) {
+                var successLength = Orlength - pushError.length;
+                console.log(pushError);
+                alert('บันทึกข้อมูลเรียบร้อยแล้ว : ' + successLength + ' รายการ ผิดพลาด : ' + pushError.length + ' รายการ');
+                i = 0;
+                $scope.execute = null;
+                return;
+              }
             });
           });
         }
