@@ -18,28 +18,37 @@ exports.invokeRolesPolicies = function () {
       resources: '/api/orders',
       permissions: '*'
     }, {
-      resources: '/api/orders/:orderId',
-      permissions: '*'
-    }]
+        resources: '/api/orders/:orderId',
+        permissions: '*'
+      }, {
+        resources: '/api/orders/v2',
+        permissions: ['get']
+      }]
   }, {
-    roles: ['user'],
-    allows: [{
-      resources: '/api/orders',
-      permissions: ['get', 'post']
+      roles: ['user'],
+      allows: [{
+        resources: '/api/orders',
+        permissions: ['get', 'post']
+      }, {
+          resources: '/api/orders/:orderId',
+          permissions: ['get']
+        }, {
+          resources: '/api/orders/v2',
+          permissions: ['get']
+        }]
     }, {
-      resources: '/api/orders/:orderId',
-      permissions: ['get']
-    }]
-  }, {
-    roles: ['guest'],
-    allows: [{
-      resources: '/api/orders',
-      permissions: ['get']
-    }, {
-      resources: '/api/orders/:orderId',
-      permissions: ['get']
-    }]
-  }]);
+      roles: ['guest'],
+      allows: [{
+        resources: '/api/orders',
+        permissions: ['get']
+      }, {
+          resources: '/api/orders/:orderId',
+          permissions: ['get']
+        }, {
+          resources: '/api/orders/v2',
+          permissions: ['get']
+        }]
+    }]);
 };
 
 /**

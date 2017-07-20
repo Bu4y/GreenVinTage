@@ -5,7 +5,9 @@ var should = require('should'),
   path = require('path'),
   mongoose = require('mongoose'),
   User = mongoose.model('User'),
+  Shop = mongoose.model('Shop'),
   Order = mongoose.model('Order'),
+  Product = mongoose.model('Product'),
   express = require(path.resolve('./config/lib/express'));
 
 /**
@@ -15,7 +17,9 @@ var app,
   agent,
   credentials,
   user,
-  order;
+  order,
+  shop,
+  product;
 
 /**
  * Order routes tests
@@ -36,7 +40,9 @@ describe('Order CRUD tests', function () {
       username: 'username',
       password: 'M3@n.jsI$Aw3$0m3'
     };
-
+    shop = new Shop({
+      name: 'test'
+    });
     // Create a new user
     user = new User({
       firstName: 'Full',
@@ -45,16 +51,29 @@ describe('Order CRUD tests', function () {
       email: 'test@test.com',
       username: credentials.username,
       password: credentials.password,
-      provider: 'local'
+      provider: 'local',
+      shop: shop
     });
+    product = new Product({
+      name: 'product',
+      user: user
+    });
+
 
     // Save a user to the test db and create new Order
     user.save(function () {
-      order = {
-        name: 'Order name'
-      };
-
-      done();
+      shop.save(function () {
+        product.save(function () {
+          order = {
+            name: 'Order name',
+            items: [{
+              product: product,
+              status: 'confirmd'
+            }]
+          };
+          done();
+        });
+      });
     });
   });
 
@@ -403,9 +422,59 @@ describe('Order CRUD tests', function () {
     });
   });
 
+  it('should be able to get a Mobile list of Orders logged in', function (done) {
+    agent.post('/api/auth/signin')
+      .send(credentials)
+      .expect(200)
+      .end(function (signinErr, signinRes) {
+        // Handle signin error
+        if (signinErr) {
+          return done(signinErr);
+        }
+
+        // Get the userId
+        var userId = user.id;
+
+        // Save a new Order
+        agent.post('/api/orders')
+          .send(order)
+          .expect(200)
+          .end(function (orderSaveErr, orderSaveRes) {
+            // Handle Order save error
+            if (orderSaveErr) {
+              return done(orderSaveErr);
+            }
+
+            // Get a list of Orders
+            agent.get('/api/orders/v2')
+              .end(function (ordersGetErr, ordersGetRes) {
+                // Handle Orders save error
+                if (ordersGetErr) {
+                  return done(ordersGetErr);
+                }
+
+                // Get Orders list
+                var orders = ordersGetRes.body;
+
+                // Set assertions
+                orders.orders.should.be.instanceof(Array).and.have.lengthOf(0);
+                orders.neworders.should.be.instanceof(Array).and.have.lengthOf(0);
+                orders.histories.should.be.instanceof(Array).and.have.lengthOf(1);
+
+                // Call the assertion callback
+                done();
+              });
+          });
+      });
+  });
+
   afterEach(function (done) {
     User.remove().exec(function () {
-      Order.remove().exec(done);
+      Shop.remove().exec(function () {
+        Product.remove().exec(function () {
+          Order.remove().exec(done);
+        });
+      });
     });
   });
 });

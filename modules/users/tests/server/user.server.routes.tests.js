@@ -906,6 +906,7 @@ describe('User CRUD tests', function () {
 
                         res.body.username.should.equal('mrtest');
                         res.body.shop.name.should.equal('ร้านค้าทดสอบ');
+                        res.body.roles[0].should.equal('shop');
                         done();
                     });
             });

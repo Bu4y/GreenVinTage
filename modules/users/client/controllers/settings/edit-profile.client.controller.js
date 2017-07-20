@@ -50,6 +50,7 @@ angular.module('users').controller('EditProfileController', ['$scope', '$http', 
         if (users && users.length > 0) {
           Orlength = users.length;
           users.forEach(function (user) {
+            // user.roles = ['shop'];
             $http.post('/api/users/genarate', user).then(function (res) {
               console.log(res);
               i++;

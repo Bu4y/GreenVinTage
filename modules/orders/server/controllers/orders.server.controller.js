@@ -12,11 +12,11 @@ var path = require('path'),
 /**
  * Create a Order
  */
-exports.create = function(req, res) {
+exports.create = function (req, res) {
   var order = new Order(req.body);
   order.user = req.user;
 
-  order.save(function(err) {
+  order.save(function (err) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -30,7 +30,7 @@ exports.create = function(req, res) {
 /**
  * Show the current Order
  */
-exports.read = function(req, res) {
+exports.read = function (req, res) {
   // convert mongoose document to JSON
   var order = req.order ? req.order.toJSON() : {};
 
@@ -44,12 +44,12 @@ exports.read = function(req, res) {
 /**
  * Update a Order
  */
-exports.update = function(req, res) {
+exports.update = function (req, res) {
   var order = req.order;
 
   order = _.extend(order, req.body);
 
-  order.save(function(err) {
+  order.save(function (err) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -63,10 +63,10 @@ exports.update = function(req, res) {
 /**
  * Delete an Order
  */
-exports.delete = function(req, res) {
+exports.delete = function (req, res) {
   var order = req.order;
 
-  order.remove(function(err) {
+  order.remove(function (err) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -80,8 +80,132 @@ exports.delete = function(req, res) {
 /**
  * List of Orders
  */
-exports.list = function(req, res) {
-  Order.find().sort('-created').populate('user', 'displayName').exec(function(err, orders) {
+exports.newlist = function (req, res, next) {
+  var user = req.user;
+  if (user && user !== undefined) {
+    Order.find().sort('-created').populate('user').populate({
+      path: 'items.product',
+      model: 'Product',
+      populate: {
+        path: 'user',
+        model: 'User'
+      }
+    }).exec(function (err, orders) {
+      if (err) {
+        return res.status(400).send({
+          message: errorHandler.getErrorMessage(err)
+        });
+      } else {
+        console.log('asdfsdfa' + orders[0]);
+        if (user.roles[0] === 'admin') {
+          if (orders.length > 0) {
+            req.orders = orders;
+            next();
+          } else {
+            next();
+          }
+        } else {
+          if (orders.length > 0) {
+            var filterStatusConfirm = orders.filter(function (obj) {
+              return obj.items.filter(function (obj2) { return obj2.status === 'confirm'; }).length > 0;
+            });
+            // console.log(filterStatusConfirm);
+            // next();
+            // // console.log(filterStatusConfirm);
+            if (filterStatusConfirm && filterStatusConfirm.length > 0) {
+              var newlist = filterStatusConfirm.filter(function (obj) {
+                return obj.items.filter(function (obj2) { return obj2.product.user.shop.toString() === user.shop.toString(); }).length > 0;
+              });
+              req.newlist = newlist;
+              next();
+            } else {
+              next();
+            }
+
+          } else {
+            next();
+          }
+        }
+      }
+    });
+  } else {
+    next();
+  }
+};
+
+exports.historylist = function (req, res, next) {
+  var user = req.user;
+  if (user && user !== undefined) {
+    Order.find().sort('-created').populate('user').populate({
+      path: 'items.product',
+      model: 'Product',
+      populate: {
+        path: 'user',
+        model: 'User'
+      }
+    }).exec(function (err, orders) {
+      if (err) {
+        return res.status(400).send({
+          message: errorHandler.getErrorMessage(err)
+        });
+      } else {
+        if (user.roles[0] === 'admin') {
+          if (orders.length > 0) {
+            req.orders = orders;
+            next();
+          } else {
+            next();
+          }
+        } else {
+          if (orders.length > 0) {
+            console.log(orders[0]);
+            var filterStatusConfirm = orders.filter(function (obj) {
+              return obj.items.filter(function (obj2) { return obj2.status !== 'confirm'; }).length > 0;
+            });
+            console.log(filterStatusConfirm);
+            // next();
+            // // console.log(filterStatusConfirm);
+            if (filterStatusConfirm && filterStatusConfirm.length > 0) {
+              var historylist = filterStatusConfirm.filter(function (obj) {
+                return obj.items.filter(function (obj2) { return obj2.product.user.shop.toString() === user.shop.toString(); }).length > 0;
+              });
+              req.historylist = historylist;
+              next();
+            } else {
+              next();
+            }
+
+          } else {
+            next();
+          }
+        }
+      }
+    });
+  } else {
+    next();
+  }
+};
+
+exports.resutlist = function (req, res) {
+  // console.log('=====order' + req.orders);
+  // console.log('=====neworders' + req.newlist);
+  // console.log('=====histories' + req.historylist);
+  res.jsonp({
+    orders: req.orders || [],
+    neworders: req.newlist || [],
+    histories: req.historylist || []
+  });
+};
+
+exports.list = function (req, res) {
+  Order.find().sort('-created').populate('user').populate({
+    path: 'items.product',
+    model: 'Product',
+    populate: {
+      path: 'user',
+      model: 'User'
+    }
+  }).exec(function (err, orders) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
@@ -95,7 +219,7 @@ exports.list = function(req, res) {
 /**
  * Order middleware
  */
-exports.orderByID = function(req, res, next, id) {
+exports.orderByID = function (req, res, next, id) {
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).send({

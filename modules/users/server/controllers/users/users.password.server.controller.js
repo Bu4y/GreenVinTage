@@ -273,7 +273,8 @@ exports.genarateUser = function (req, res, next) {
       tel: data.tel,
       username: data.username,
       password: 'P@ssw0rd1234',
-      provider: 'local'
+      provider: 'local',
+      roles: ['shop']
     };
     req.shop = {
       name: data.shop.name
